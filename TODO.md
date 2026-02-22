@@ -15,19 +15,19 @@
 ## Phase 2: Web Worker + Transformers.js 統合
 
 - [x] `src/types.ts` — WorkerRequest, WorkerResponse, ProgressData 型定義
-- [ ] `src/worker.ts` — SegmentationPipeline シングルトン + メッセージハンドラ
-  - [ ] WebGPU 事前チェック (`navigator.gpu.requestAdapter()`)
-  - [ ] WebGPU → WASM 自動フォールバック
-  - [ ] `'init'` メッセージでモデルロード + progress 転送
-  - [ ] `'process'` メッセージで `RawImage.fromURL()` → 推論 → mask 返却
-- [ ] `src/utils/image.ts` — 画像処理ユーティリティ
-  - [ ] `fileToImageData()`: File → ObjectURL → Image → Canvas → ImageData
-  - [ ] `applyMask()`: マスクの R チャンネルを alpha に適用 (リサイズ含む)
-  - [ ] `imageDataToBlobUrl()`: ImageData → Canvas → Blob → ObjectURL
-  - [ ] 大画像リサイズ (4096px 上限)
-- [ ] `src/utils/device.ts` — `checkWebGPU()` 情報表示用
-- [ ] `main.ts` に Worker 起動 + メッセージハンドラ追加
-- [ ] **検証**: テスト画像で背景除去結果がコンソール/canvas に表示される
+- [x] `src/worker.ts` — SegmentationPipeline シングルトン + メッセージハンドラ
+  - [x] WebGPU 事前チェック (`navigator.gpu.requestAdapter()`)
+  - [x] WebGPU → WASM 自動フォールバック
+  - [x] `'init'` メッセージでモデルロード + progress 転送
+  - [x] `'process'` メッセージで `RawImage.fromURL()` → 推論 → mask 返却
+- [x] `src/utils/image.ts` — 画像処理ユーティリティ
+  - [x] `fileToImageData()`: File → ObjectURL → Image → Canvas → ImageData
+  - [x] `applyMask()`: マスクの R チャンネルを alpha に適用 (リサイズ含む)
+  - [x] `imageDataToBlobUrl()`: ImageData → Canvas → Blob → ObjectURL
+  - [x] 大画像リサイズ (4096px 上限)
+- [x] `src/utils/device.ts` — `checkWebGPU()` 情報表示用
+- [x] `main.ts` に Worker 起動 + メッセージハンドラ追加
+- [x] **検証**: テスト画像で背景除去結果がコンソール/canvas に表示される
 
 ## Phase 3: UI 実装
 
