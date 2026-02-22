@@ -31,26 +31,26 @@
 
 ## Phase 3: UI 実装
 
-- [ ] `src/ui/dropzone.ts`
-  - [ ] dragenter/dragover/dragleave/drop イベント
-  - [ ] ファイル選択ボタン (hidden input)
-  - [ ] バリデーション (JPG/PNG/WebP, 20MB 上限)
-  - [ ] ペースト対応 (Ctrl+V)
-  - [ ] ドラッグオーバー時アクティブスタイル
-- [ ] `src/ui/slider.ts`
-  - [ ] 左=オリジナル / 右=背景除去済み (市松模様背景)
-  - [ ] `clip-path: inset()` によるクリッピング
-  - [ ] マウス + タッチドラッグ対応
-  - [ ] キーボードアクセシビリティ (矢印キー)
-  - [ ] 初期位置 50%
-- [ ] `src/ui/download.ts`
-  - [ ] 「ダウンロード (PNG)」ボタン (`{元ファイル名}_no_bg.png`)
-  - [ ] 「新しい画像」ボタン (状態リセット)
-  - [ ] 処理統計表示 (バックエンド, 処理時間)
-- [ ] `public/checkerboard.svg` — 透明背景パターン
-- [ ] `main.ts` で全モジュール統合
-- [ ] コンポーネント CSS (dropzone, slider, buttons, etc.)
-- [ ] **検証**: 画像ドロップ → スライダー比較 → PNG ダウンロードの完全フロー
+- [x] `src/ui/dropzone.ts`
+  - [x] dragenter/dragover/dragleave/drop イベント
+  - [x] ファイル選択ボタン (hidden input)
+  - [x] バリデーション (JPG/PNG/WebP, 20MB 上限)
+  - [x] ペースト対応 (Ctrl+V)
+  - [x] ドラッグオーバー時アクティブスタイル
+- [x] `src/ui/slider.ts`
+  - [x] 左=オリジナル / 右=背景除去済み (市松模様背景)
+  - [x] `clip-path: inset()` によるクリッピング
+  - [x] マウス + タッチドラッグ対応
+  - [x] キーボードアクセシビリティ (矢印キー)
+  - [x] 初期位置 50%
+- [x] `src/ui/download.ts`
+  - [x] 「ダウンロード (PNG)」ボタン (`{元ファイル名}_no_bg.png`)
+  - [x] 「新しい画像」ボタン (状態リセット)
+  - [x] 処理統計表示 (バックエンド, 処理時間)
+- [x] `public/checkerboard.svg` — 透明背景パターン
+- [x] `main.ts` で全モジュール統合
+- [x] コンポーネント CSS (dropzone, slider, buttons, etc.)
+- [x] **検証**: 画像ドロップ → スライダー比較 → PNG ダウンロードの完全フロー
 
 ## Phase 4: プログレス表示 + エラーハンドリング
 
