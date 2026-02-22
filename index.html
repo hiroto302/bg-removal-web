@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Background Remover — AI背景除去</title>
+    <meta name="description" content="ブラウザ完結型のAI背景除去ツール。画像をアップロードするだけで、無料・無制限・アカウント不要で背景を除去できます。" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <div class="header-badge">AI-Powered &amp; 100% Private</div>
+        <h1 class="header-title">Background <span class="text-primary">Remover</span></h1>
+        <p class="header-subtitle">画像をアップロードするだけで、AIが自動で背景を除去します。<br />すべてブラウザ内で処理 — サーバーへの送信なし。</p>
+      </header>
+
+      <main>
+        <section id="dropzone-section">
+          <div class="dropzone" id="dropzone">
+            <div class="dropzone-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+            </div>
+            <p class="dropzone-title">画像をここにドロップ</p>
+            <p class="dropzone-subtitle">または</p>
+            <button class="btn btn-primary" id="upload-btn">ファイルを選択</button>
+            <p class="dropzone-hint">JPG, PNG, WebP — 最大 20MB</p>
+            <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" hidden />
+            <p class="dropzone-error hidden" id="dropzone-error"></p>
+          </div>
+        </section>
+
+        <section id="progress-section" class="hidden">
+          <div class="progress-card">
+            <div class="progress-bar-container" id="progress-bar-container">
+              <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p class="progress-text" id="progress-text">モデルを準備中...</p>
+            <div class="spinner hidden" id="spinner"></div>
+          </div>
+        </section>
+
+        <section id="result-section" class="hidden">
+          <div id="slider-container"></div>
+          <div class="result-actions" id="result-actions">
+            <button class="btn btn-primary" id="download-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              ダウンロード (PNG)
+            </button>
+            <button class="btn btn-secondary" id="new-image-btn">新しい画像</button>
+          </div>
+          <div class="result-stats hidden" id="result-stats">
+            <span id="stats-backend"></span>
+            <span id="stats-time"></span>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p class="footer-privacy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          画像はブラウザ内のみで処理されます。サーバーへの送信は一切ありません。
+        </p>
+        <div class="footer-info">
+          <span class="badge" id="backend-badge">—</span>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
