@@ -41,13 +41,13 @@ async function initPipeline(): Promise<void> {
   respond({ type: 'init_complete', device: currentDevice });
 }
 
-async function processImage(imageUrl: string): Promise<void> {
+async function processImage(imageUrl: string, processingId: number): Promise<void> {
   if (!segmenter) {
-    respond({ type: 'error', message: 'Pipeline not initialized' });
+    respond({ type: 'error', message: 'Pipeline not initialized', processingId });
     return;
   }
 
-  respond({ type: 'processing' });
+  respond({ type: 'processing', processingId });
 
   const result = await segmenter(imageUrl);
   const mask = result[0].mask;
@@ -64,7 +64,7 @@ async function processImage(imageUrl: string): Promise<void> {
   }
   const maskImageData = new ImageData(rgbaData, width, height);
 
-  respond({ type: 'result', maskData: maskImageData });
+  respond({ type: 'result', maskData: maskImageData, processingId });
 }
 
 self.addEventListener('message', async (event: MessageEvent<WorkerRequest>) => {
@@ -76,7 +76,7 @@ self.addEventListener('message', async (event: MessageEvent<WorkerRequest>) => {
         await initPipeline();
         break;
       case 'process':
-        await processImage(msg.imageUrl);
+        await processImage(msg.imageUrl, msg.processingId);
         break;
       default:
         respond({
@@ -86,6 +86,7 @@ self.addEventListener('message', async (event: MessageEvent<WorkerRequest>) => {
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    respond({ type: 'error', message });
+    const processingId = 'processingId' in msg ? (msg as { processingId: number }).processingId : undefined;
+    respond({ type: 'error', message, processingId });
   }
 });

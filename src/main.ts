@@ -26,6 +26,7 @@ interface AppStore {
   processingTime: number | null;
   errorMessage: string | null;
   originalFilename: string | null;
+  processingId: number;
 }
 
 const store: AppStore = {
@@ -37,6 +38,7 @@ const store: AppStore = {
   processingTime: null,
   errorMessage: null,
   originalFilename: null,
+  processingId: 0,
 };
 
 // ── DOM ────────────────────────────────────────────
@@ -142,15 +144,21 @@ function handleWorkerMessage(msg: WorkerResponse): void {
       break;
 
     case 'processing':
+      if (msg.processingId !== store.processingId) return;
       processingStartTime = performance.now();
       transition('processing');
       break;
 
     case 'result':
+      if (msg.processingId !== store.processingId) {
+        console.warn(`[Stale] Ignoring result for processingId=${msg.processingId}`);
+        return;
+      }
       onResult(msg.maskData);
       break;
 
     case 'error':
+      if (msg.processingId !== undefined && msg.processingId !== store.processingId) return;
       console.error('[Worker]', msg.message);
       transition('error', msg.message);
       break;
@@ -284,7 +292,8 @@ function handleRetry(): void {
     transition('loading_model');
     worker.postMessage({ type: 'init' });
   } else if (store.originalUrl) {
-    worker.postMessage({ type: 'process', imageUrl: store.originalUrl });
+    store.processingId++;
+    worker.postMessage({ type: 'process', imageUrl: store.originalUrl, processingId: store.processingId });
   } else {
     transition('idle');
   }
@@ -315,7 +324,8 @@ export async function handleImageFile(file: File): Promise<void> {
     return;
   }
 
-  worker.postMessage({ type: 'process', imageUrl: objectUrl });
+  store.processingId++;
+  worker.postMessage({ type: 'process', imageUrl: objectUrl, processingId: store.processingId });
 }
 
 export function resetToIdle(): void {
