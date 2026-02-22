@@ -2,19 +2,19 @@
 
 ## Phase 1: プロジェクトセットアップ
 
-- [ ] Vite プロジェクト初期化 (`npm create vite@latest . -- --template vanilla-ts`)
-- [ ] テンプレートの不要ファイル削除 (`counter.ts`, `typescript.svg`, デフォルト内容)
-- [ ] `@huggingface/transformers` インストール
-- [ ] `vite.config.ts` 設定 (optimizeDeps.exclude, worker.format, build.target)
-- [ ] `tsconfig.json` に `"WebWorker"` を lib に追加
-- [ ] `index.html` に HTML スケルトン構築 (header, dropzone-section, progress-section, result-section, footer)
-- [ ] `src/style.css` に CSS Custom Properties + グローバルスタイル
-- [ ] `src/main.ts` に最小エントリポイント
-- [ ] **検証**: `npm run dev` でページが表示される
+- [x] Vite プロジェクト初期化 (`npm create vite@latest . -- --template vanilla-ts`)
+- [x] テンプレートの不要ファイル削除 (`counter.ts`, `typescript.svg`, デフォルト内容)
+- [x] `@huggingface/transformers` インストール
+- [x] `vite.config.ts` 設定 (optimizeDeps.exclude, worker.format, build.target)
+- [x] `tsconfig.json` に `"WebWorker"` を lib に追加
+- [x] `index.html` に HTML スケルトン構築 (header, dropzone-section, progress-section, result-section, footer)
+- [x] `src/style.css` に CSS Custom Properties + グローバルスタイル
+- [x] `src/main.ts` に最小エントリポイント
+- [x] **検証**: `npm run dev` でページが表示される
 
 ## Phase 2: Web Worker + Transformers.js 統合
 
-- [ ] `src/types.ts` — WorkerRequest, WorkerResponse, ProgressData 型定義
+- [x] `src/types.ts` — WorkerRequest, WorkerResponse, ProgressData 型定義
 - [ ] `src/worker.ts` — SegmentationPipeline シングルトン + メッセージハンドラ
   - [ ] WebGPU 事前チェック (`navigator.gpu.requestAdapter()`)
   - [ ] WebGPU → WASM 自動フォールバック
