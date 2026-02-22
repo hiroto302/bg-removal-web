@@ -12,6 +12,7 @@ import {
 import { initDropzone } from './ui/dropzone';
 import { initSlider } from './ui/slider';
 import { initDownload } from './ui/download';
+import { initProgress } from './ui/progress';
 
 // ── State ──────────────────────────────────────────
 type AppState = 'idle' | 'loading_model' | 'processing' | 'result' | 'error';
@@ -57,6 +58,9 @@ const $progressBarContainer = document.getElementById('progress-bar-container')!
 const $progressBar = document.getElementById('progress-bar')!;
 const $progressText = document.getElementById('progress-text')!;
 const $spinner = document.getElementById('spinner')!;
+const $progressError = document.getElementById('progress-error')!;
+const $progressErrorMessage = document.getElementById('progress-error-message')!;
+const $retryBtn = document.getElementById('retry-btn') as HTMLButtonElement;
 
 // Result
 const $sliderContainer = document.getElementById('slider-container')!;
@@ -76,6 +80,17 @@ const dropzone = initDropzone({
     store.originalFilename = file.name;
     handleImageFile(file);
   },
+});
+
+const progress = initProgress({
+  barContainerEl: $progressBarContainer,
+  barEl: $progressBar,
+  textEl: $progressText,
+  spinnerEl: $spinner,
+  errorEl: $progressError,
+  errorMessageEl: $progressErrorMessage,
+  retryBtnEl: $retryBtn,
+  onRetry: handleRetry,
 });
 
 const download = initDownload({
@@ -102,6 +117,11 @@ worker.addEventListener('message', (event: MessageEvent<WorkerResponse>) => {
 worker.addEventListener('error', (event: ErrorEvent) => {
   console.error('[Worker error]', event.message);
   transition('error', `Worker error: ${event.message}`);
+});
+
+worker.addEventListener('messageerror', (event) => {
+  console.error('[Worker messageerror]', event);
+  transition('error', 'Worker通信エラーが発生しました。');
 });
 
 // ── Worker Message Handler ─────────────────────────
@@ -138,15 +158,7 @@ function handleWorkerMessage(msg: WorkerResponse): void {
 }
 
 function onInitProgress(data: ProgressData): void {
-  if (data.status === 'progress' && data.progress !== undefined) {
-    const pct = Math.round(data.progress);
-    $progressBar.style.width = `${pct}%`;
-    $progressText.textContent = `モデルをダウンロード中... ${pct}%`;
-  } else if (data.status === 'initiate') {
-    $progressText.textContent = `${data.file ?? 'ファイル'} を準備中...`;
-  } else if (data.status === 'done') {
-    $progressText.textContent = 'モデルの準備が完了しました';
-  }
+  progress.updateProgress(data);
   console.log(`[Init] ${data.status}`, data.file ?? '', data.progress ?? '');
 }
 
@@ -190,9 +202,20 @@ function transition(newState: AppState, errorMessage?: string): void {
     store.errorMessage = null;
   }
 
+  // Determine if error should show in progress section
+  const isProgressError =
+    newState === 'error' &&
+    (prevState === 'loading_model' || prevState === 'processing');
+
   // Section visibility
-  $dropzoneSection.classList.toggle('hidden', newState !== 'idle' && newState !== 'error');
-  $progressSection.classList.toggle('hidden', newState !== 'loading_model' && newState !== 'processing');
+  $dropzoneSection.classList.toggle(
+    'hidden',
+    newState !== 'idle' && !(newState === 'error' && !isProgressError),
+  );
+  $progressSection.classList.toggle(
+    'hidden',
+    newState !== 'loading_model' && newState !== 'processing' && !isProgressError,
+  );
   $resultSection.classList.toggle('hidden', newState !== 'result');
 
   // State-specific UI
@@ -205,20 +228,19 @@ function transition(newState: AppState, errorMessage?: string): void {
         sliderControls = null;
       }
       download.reset();
+      progress.reset();
+      if (store.device) {
+        $backendBadge.textContent = store.device === 'webgpu' ? 'WebGPU (fp16)' : 'WASM (q8)';
+      }
       break;
 
     case 'loading_model':
       dropzone.setDisabled(true);
-      $progressBar.style.width = '0%';
-      $progressText.textContent = 'モデルを準備中...';
-      $progressBarContainer.classList.remove('hidden');
-      $spinner.classList.add('hidden');
+      progress.showDownloading();
       break;
 
     case 'processing':
-      $progressBarContainer.classList.add('hidden');
-      $spinner.classList.remove('hidden');
-      $progressText.textContent = '背景を除去中...';
+      progress.showSpinner('背景を除去中...');
       break;
 
     case 'result':
@@ -237,18 +259,35 @@ function transition(newState: AppState, errorMessage?: string): void {
 
         if (store.device && store.processingTime !== null) {
           download.showStats(store.device, store.processingTime);
+          const deviceLabel = store.device === 'webgpu' ? 'WebGPU' : 'WASM';
+          $backendBadge.textContent = `${deviceLabel} · ${(store.processingTime / 1000).toFixed(1)}s`;
         }
       }
       break;
 
     case 'error':
-      $dropzoneSection.classList.remove('hidden');
-      dropzone.showError(store.errorMessage!);
-      dropzone.setDisabled(!store.modelReady);
+      if (isProgressError) {
+        progress.showError(store.errorMessage!);
+      } else {
+        dropzone.showError(store.errorMessage!);
+        dropzone.setDisabled(!store.modelReady);
+      }
       break;
   }
 
   console.log(`[State] ${prevState} -> ${newState}`);
+}
+
+// ── Retry Handler ─────────────────────────────────
+function handleRetry(): void {
+  if (!store.modelReady) {
+    transition('loading_model');
+    worker.postMessage({ type: 'init' });
+  } else if (store.originalUrl) {
+    worker.postMessage({ type: 'process', imageUrl: store.originalUrl });
+  } else {
+    transition('idle');
+  }
 }
 
 // ── Public API for UI Modules ──────────────────────

@@ -240,6 +240,18 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* Progress Error */
+.progress-error {
+  margin-top: var(--space-4);
+}
+
+.progress-error-message {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  margin-bottom: var(--space-4);
+}
+
 /* Slider */
 .slider {
   position: relative;
